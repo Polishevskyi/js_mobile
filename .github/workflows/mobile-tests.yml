@@ -139,11 +139,26 @@ jobs:
           path: allure-results
           merge-multiple: true
 
+      - name: Check downloaded results
+        if: always()
+        run: |
+          echo "Checking allure-results directory..."
+          ls -la allure-results/ || echo "allure-results directory not found"
+          echo "Contents of allure-results:"
+          find allure-results -type f -name "*.json" -o -name "*.txt" | head -10 || echo "No result files found"
+
       - name: Generate Allure Report
         if: always()
         run: |
-          npx allure generate allure-results --clean -o allure-report
-          npx allure open allure-report --port 0 || true
+          # Check if allure-results directory exists and has files
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
+            echo "Generating Allure report from test results..."
+            npx allure generate allure-results --clean -o allure-report
+          else
+            echo "No test results found, creating empty report..."
+            mkdir -p allure-report
+            echo '<html><body><h1>No test results available</h1><p>Tests may have failed or no results were generated.</p></body></html>' > allure-report/index.html
+          fi
 
       - name: Deploy report to Github Pages
         if: always()
