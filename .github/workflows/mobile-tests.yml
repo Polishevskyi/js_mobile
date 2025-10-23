@@ -105,11 +105,14 @@ jobs:
           echo "TEST_ENV=${{ secrets.TEST_ENV }}" >> .env
           echo "BROWSERSTACK_USERNAME=${{ secrets.BROWSERSTACK_USERNAME }}" >> .env
           echo "BROWSERSTACK_ACCESS_KEY=${{ secrets.BROWSERSTACK_ACCESS_KEY }}" >> .env
+          echo "MOBILE_APP_PATH=${{ secrets.MOBILE_APP_PATH }}" >> .env
 
       - name: Run Mobile tests
         run: npm run test:browserstack
         env:
           CI: true
+          VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
+          VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
 
       - name: Upload Allure Results
         if: always()
