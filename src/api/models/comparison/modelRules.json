@@ -1,0 +1,10 @@
+{
+  "CreatePetRequest": {
+    "target": "CreatePetRequest",
+    "fields": ["id", "name", "status", "category.id", "category.name"]
+  },
+  "CreatePetResponse": {
+    "target": "CreatePetResponse",
+    "fields": ["id", "name", "status", "category.id", "category.name"]
+  }
+}
