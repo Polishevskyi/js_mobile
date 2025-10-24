@@ -22,11 +22,10 @@ export default class Requester {
       );
     }
 
-    let {
-      url,
-      method = ApiConstants.DEFAULT_HTTP_METHOD,
-      responseModel,
-    } = endpoint;
+    const { method = ApiConstants.DEFAULT_HTTP_METHOD, responseModel } =
+      endpoint;
+
+    let { url } = endpoint;
 
     if (typeof url === 'function') {
       url = url(...Object.values(pathParams));
