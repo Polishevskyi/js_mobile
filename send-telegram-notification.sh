@@ -1,41 +1,28 @@
 #!/bin/bash
 
 # Telegram Notification Script for Mobile Test Automation
-# This script collects test results from Allure reports and sends notifications to Telegram
 # Usage: ./send-telegram-notification.sh
-# Required environment variables: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, GITHUB_REPOSITORY, GITHUB_SHA, etc.
 
 # Load environment variables
 if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
 fi
 
-# Get test results from Allure
+# Get test results from Allure - only passed and failed tests
 if [ -d "allure-results" ]; then
-    # Count test results from result files
     PASSED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "passed") | .status' {} \; 2>/dev/null | wc -l)
     FAILED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "failed") | .status' {} \; 2>/dev/null | wc -l)
-    BROKEN_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "broken") | .status' {} \; 2>/dev/null | wc -l)
-    SKIPPED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "skipped") | .status' {} \; 2>/dev/null | wc -l)
-    # Total tests = only executed tests (passed + failed + broken), not skipped
-    TOTAL_TESTS=$((PASSED_TESTS + FAILED_TESTS + BROKEN_TESTS))
+    TOTAL_TESTS=$((PASSED_TESTS + FAILED_TESTS))
 else
     TOTAL_TESTS=0
     PASSED_TESTS=0
     FAILED_TESTS=0
-    BROKEN_TESTS=0
-    SKIPPED_TESTS=0
 fi
 
 # Ensure variables are numbers
 TOTAL_TESTS=$(echo "${TOTAL_TESTS:-0}" | tr -d '\n' | xargs)
 PASSED_TESTS=$(echo "${PASSED_TESTS:-0}" | tr -d '\n' | xargs)
 FAILED_TESTS=$(echo "${FAILED_TESTS:-0}" | tr -d '\n' | xargs)
-BROKEN_TESTS=$(echo "${BROKEN_TESTS:-0}" | tr -d '\n' | xargs)
-SKIPPED_TESTS=$(echo "${SKIPPED_TESTS:-0}" | tr -d '\n' | xargs)
-
-# Debug output
-echo "DEBUG: TOTAL_TESTS=$TOTAL_TESTS, PASSED_TESTS=$PASSED_TESTS, FAILED_TESTS=$FAILED_TESTS, BROKEN_TESTS=$BROKEN_TESTS, SKIPPED_TESTS=$SKIPPED_TESTS"
 
 # Calculate success rate
 if [ "$TOTAL_TESTS" -gt 0 ]; then
@@ -44,72 +31,25 @@ else
     SUCCESS_RATE=0
 fi
 
-# Determine status based on test results
+# Determine status
 if [ "$TOTAL_TESTS" -eq 0 ]; then
     STATUS_COLOR="🟡"
     STATUS_TEXT="NO_TESTS"
-elif [ "$FAILED_TESTS" -eq 0 ] && [ "$BROKEN_TESTS" -eq 0 ]; then
+elif [ "$FAILED_TESTS" -eq 0 ]; then
     STATUS_COLOR="🟢"
     STATUS_TEXT="SUCCESS"
-elif [ "$FAILED_TESTS" -gt 0 ] || [ "$BROKEN_TESTS" -gt 0 ]; then
+else
     STATUS_COLOR="🔴"
     STATUS_TEXT="FAILED"
-else
-    STATUS_COLOR="🟡"
-    STATUS_TEXT="PARTIAL"
 fi
 
-# Get test environment
-TEST_ENV=${TEST_ENV:-"local"}
-if [ "$TEST_ENV" == "browserstack" ]; then
-    ENV_ICON="☁️"
-    ENV_TEXT="BrowserStack"
-elif [ "$TEST_ENV" == "saucelabs" ]; then
-    ENV_ICON="🧪"
-    ENV_TEXT="SauceLabs"
-else
-    ENV_ICON="💻"
-    ENV_TEXT="Local"
-fi
-
-# Create descriptive text for zero values
-if [ "$TOTAL_TESTS" -eq 0 ]; then
-    TOTAL_TESTS_TEXT="No tests found"
-else
-    TOTAL_TESTS_TEXT="$TOTAL_TESTS"
-fi
-
-if [ "$PASSED_TESTS" -eq 0 ]; then
-    PASSED_TESTS_TEXT="0"
-else
-    PASSED_TESTS_TEXT="$PASSED_TESTS"
-fi
-
-if [ "$FAILED_TESTS" -eq 0 ]; then
-    FAILED_TESTS_TEXT="0"
-else
-    FAILED_TESTS_TEXT="$FAILED_TESTS"
-fi
-
-if [ "$BROKEN_TESTS" -eq 0 ]; then
-    BROKEN_TESTS_TEXT="0"
-else
-    BROKEN_TESTS_TEXT="$BROKEN_TESTS"
-fi
-
-if [ "$SKIPPED_TESTS" -eq 0 ]; then
-    SKIPPED_TESTS_TEXT="0"
-else
-    SKIPPED_TESTS_TEXT="$SKIPPED_TESTS"
-fi
-
-# Build HTML-formatted message for Telegram
+# Build message for Telegram
 MESSAGE="🚀 <b>Mobile Test Automation Completed!</b>
 
 📊 <b>Test Statistics:</b>
-• <b>Total tests:</b> $TOTAL_TESTS_TEXT
-• <b>Passed:</b> $PASSED_TESTS_TEXT ✅
-• <b>Failed:</b> $FAILED_TESTS_TEXT ❌
+• <b>Total tests:</b> $TOTAL_TESTS
+• <b>Passed:</b> $PASSED_TESTS ✅
+• <b>Failed:</b> $FAILED_TESTS ❌
 • <b>Success rate:</b> ${SUCCESS_RATE}%
 
 🔗 <b>Links:</b>
@@ -122,11 +62,10 @@ $STATUS_COLOR <b>Status:</b> $STATUS_TEXT"
 # Check if Telegram credentials are provided
 if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
     echo "⚠️  Telegram credentials not provided. Skipping notification."
-    echo "Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in your .env file"
     exit 0
 fi
 
-# Send message to Telegram using Bot API
+# Send message to Telegram
 RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
   -H "Content-Type: application/json" \
   -d "{
