@@ -107,7 +107,7 @@ jobs:
           echo "MOBILE_APP_PATH=${{ secrets.MOBILE_APP_PATH }}" >> .env
 
       - name: Run Mobile tests
-        run: npm run test:browserstack
+        run: npm run test:mobile
         env:
           CI: true
           VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
