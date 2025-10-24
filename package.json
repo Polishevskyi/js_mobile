@@ -7,7 +7,7 @@
     "test": "npm run test:api && npm run test:mobile",
     "test:api": "wdio run wdio.api.conf.js",
     "test:mobile": "wdio run wdio.mobile.conf.js",
-    "test:browserstack": "TEST_ENV=browserstack wdio run wdio.mobile.conf.js",
+    "bs:upload-app": "node bs-upload-app.js",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
     "allure:serve": "allure serve allure-results",
     "allure:open": "allure open allure-report",
@@ -56,6 +56,8 @@
     "@faker-js/faker": "^9.0.3",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
+    "form-data": "^4.0.4",
+    "tweetsodium": "^0.0.4",
     "webdriverio": "^8.16.12"
   },
   "engines": {
