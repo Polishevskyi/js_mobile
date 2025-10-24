@@ -106,8 +106,6 @@ MESSAGE="🚀 <b>Mobile Test Automation Completed!</b>
 • <b>Total tests:</b> $TOTAL_TESTS_TEXT
 • <b>Passed:</b> $PASSED_TESTS_TEXT ✅
 • <b>Failed:</b> $FAILED_TESTS_TEXT ❌
-• <b>Broken:</b> $BROKEN_TESTS_TEXT ⚠️
-• <b>Skipped:</b> $SKIPPED_TESTS_TEXT ⏭️
 • <b>Success rate:</b> ${SUCCESS_RATE}%
 
 🔗 <b>Links:</b>
