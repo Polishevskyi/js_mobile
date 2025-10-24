@@ -4,7 +4,7 @@ export const isBrowserStack = process.env.TEST_ENV === 'browserstack';
 
 const MOBILE_TIMEOUT = 60000;
 const MOBILE_RETRIES = 10;
-const MAX_INSTANCES = 1;
+const MAX_INSTANCES = isBrowserStack ? 3 : 1;
 const WAIT_TIMEOUT = 10000;
 const CONNECTION_TIMEOUT = 120000;
 const CONNECTION_RETRIES = 3;
