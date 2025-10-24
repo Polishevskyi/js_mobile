@@ -13,11 +13,12 @@ fi
 # Get test results from Allure
 if [ -d "allure-results" ]; then
     # Count test results from result files
-    TOTAL_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status != null) | .status' {} \; 2>/dev/null | wc -l)
     PASSED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "passed") | .status' {} \; 2>/dev/null | wc -l)
     FAILED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "failed") | .status' {} \; 2>/dev/null | wc -l)
     BROKEN_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "broken") | .status' {} \; 2>/dev/null | wc -l)
     SKIPPED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "skipped") | .status' {} \; 2>/dev/null | wc -l)
+    # Total tests = only executed tests (passed + failed + broken), not skipped
+    TOTAL_TESTS=$((PASSED_TESTS + FAILED_TESTS + BROKEN_TESTS))
 else
     TOTAL_TESTS=0
     PASSED_TESTS=0
@@ -32,6 +33,9 @@ PASSED_TESTS=$(echo "${PASSED_TESTS:-0}" | tr -d '\n' | xargs)
 FAILED_TESTS=$(echo "${FAILED_TESTS:-0}" | tr -d '\n' | xargs)
 BROKEN_TESTS=$(echo "${BROKEN_TESTS:-0}" | tr -d '\n' | xargs)
 SKIPPED_TESTS=$(echo "${SKIPPED_TESTS:-0}" | tr -d '\n' | xargs)
+
+# Debug output
+echo "DEBUG: TOTAL_TESTS=$TOTAL_TESTS, PASSED_TESTS=$PASSED_TESTS, FAILED_TESTS=$FAILED_TESTS, BROKEN_TESTS=$BROKEN_TESTS, SKIPPED_TESTS=$SKIPPED_TESTS"
 
 # Calculate success rate
 if [ "$TOTAL_TESTS" -gt 0 ]; then
