@@ -1,11 +1,11 @@
 import MobileDataGenerator from '../../src/mobile/utils/dataGenerator.js';
 import { ERROR_MESSAGES } from '../../src/mobile/utils/constants.js';
 import {
-  menuScreen,
+  ERROR_LOCATORS,
+  LOGIN_SCREEN_LOCATORS,
   loginScreen,
   MENU_SCREEN_LOCATORS,
-  LOGIN_SCREEN_LOCATORS,
-  ERROR_LOCATORS,
+  menuScreen,
 } from '../../src/mobile/fixtures/mobileFixtures.js';
 
 describe('Mobile - Login Negative Tests', () => {

@@ -1,5 +1,5 @@
 import { compareModels } from './modelComparator.js';
-import { loadComparisonRules, getRuleFor } from './modelComparisonConfig.js';
+import { getRuleFor, loadComparisonRules } from './modelComparisonConfig.js';
 
 export const assertThatModels = (request, response) =>
   new ModelAssertions(request, response);

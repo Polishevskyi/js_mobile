@@ -2,9 +2,9 @@ name: Mobile & API Tests
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [main, master, develop]
+    branches: [ main, master, develop ]
   workflow_dispatch:
     inputs:
       test_type:
@@ -124,7 +124,7 @@ jobs:
   allure-report:
     name: Generate Allure Report
     runs-on: ubuntu-latest
-    needs: [api-tests, mobile-tests]
+    needs: [ api-tests, mobile-tests ]
     if: always()
 
     steps:

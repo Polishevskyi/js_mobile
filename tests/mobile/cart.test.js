@@ -1,11 +1,11 @@
 import { CART_DATA } from '../../src/mobile/utils/constants.js';
 import {
-  productsScreen,
-  goodsScreen,
-  cartScreen,
   CART_SCREEN_LOCATORS,
+  cartScreen,
   GOODS_SCREEN_LOCATORS,
+  goodsScreen,
   PRODUCTS_SCREEN_LOCATORS,
+  productsScreen,
 } from '../../src/mobile/fixtures/mobileFixtures.js';
 
 describe('Mobile - Cart Tests', () => {

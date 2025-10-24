@@ -1,10 +1,10 @@
 import {
-  menuScreen,
-  loginScreen,
-  productsScreen,
-  PRODUCTS_SCREEN_LOCATORS,
   LOGIN_SCREEN_LOCATORS,
+  loginScreen,
   MENU_SCREEN_LOCATORS,
+  menuScreen,
+  PRODUCTS_SCREEN_LOCATORS,
+  productsScreen,
 } from '../../src/mobile/fixtures/mobileFixtures.js';
 
 describe('Mobile - Login Tests', () => {

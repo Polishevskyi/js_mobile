@@ -1,7 +1,7 @@
 import { SORT_RESULTS, SORT_TYPES } from '../../src/mobile/utils/constants.js';
 import {
-  productsScreen,
   PRODUCTS_SCREEN_LOCATORS,
+  productsScreen,
 } from '../../src/mobile/fixtures/mobileFixtures.js';
 
 describe('Mobile - Sort Goods Tests', () => {

@@ -1,11 +1,11 @@
-import { LoginScreen, LOGIN_SCREEN_LOCATORS } from '../screens/LoginScreen.js';
-import { MenuScreen, MENU_SCREEN_LOCATORS } from '../screens/MenuScreen.js';
+import { LOGIN_SCREEN_LOCATORS, LoginScreen } from '../screens/LoginScreen.js';
+import { MENU_SCREEN_LOCATORS, MenuScreen } from '../screens/MenuScreen.js';
 import {
-  ProductsScreen,
   PRODUCTS_SCREEN_LOCATORS,
+  ProductsScreen,
 } from '../screens/ProductsScreen.js';
-import { GoodsScreen, GOODS_SCREEN_LOCATORS } from '../screens/GoodsScreen.js';
-import { CartScreen, CART_SCREEN_LOCATORS } from '../screens/CartScreen.js';
+import { GOODS_SCREEN_LOCATORS, GoodsScreen } from '../screens/GoodsScreen.js';
+import { CART_SCREEN_LOCATORS, CartScreen } from '../screens/CartScreen.js';
 
 const loginScreen = new LoginScreen();
 const menuScreen = new MenuScreen();
