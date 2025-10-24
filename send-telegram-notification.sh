@@ -12,11 +12,12 @@ fi
 
 # Get test results from Allure
 if [ -d "allure-results" ]; then
-    TOTAL_TESTS=$(find allure-results -name "*.json" -exec jq -r '.status // empty' {} \; 2>/dev/null | grep -v "^$" | wc -l)
-    PASSED_TESTS=$(find allure-results -name "*.json" -exec jq -r '.status // empty' {} \; 2>/dev/null | grep -c "passed" || echo "0")
-    FAILED_TESTS=$(find allure-results -name "*.json" -exec jq -r '.status // empty' {} \; 2>/dev/null | grep -c "failed" || echo "0")
-    BROKEN_TESTS=$(find allure-results -name "*.json" -exec jq -r '.status // empty' {} \; 2>/dev/null | grep -c "broken" || echo "0")
-    SKIPPED_TESTS=$(find allure-results -name "*.json" -exec jq -r '.status // empty' {} \; 2>/dev/null | grep -c "skipped" || echo "0")
+    # Count test results from result files
+    TOTAL_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status != null) | .status' {} \; 2>/dev/null | wc -l)
+    PASSED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "passed") | .status' {} \; 2>/dev/null | wc -l)
+    FAILED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "failed") | .status' {} \; 2>/dev/null | wc -l)
+    BROKEN_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "broken") | .status' {} \; 2>/dev/null | wc -l)
+    SKIPPED_TESTS=$(find allure-results -name "*.json" -exec jq -r 'select(.status == "skipped") | .status' {} \; 2>/dev/null | wc -l)
 else
     TOTAL_TESTS=0
     PASSED_TESTS=0
@@ -39,8 +40,11 @@ else
     SUCCESS_RATE=0
 fi
 
-# Determine status
-if [ "$JOB_STATUS" == "success" ] && [ "$FAILED_TESTS" -eq 0 ] && [ "$BROKEN_TESTS" -eq 0 ]; then
+# Determine status based on test results
+if [ "$TOTAL_TESTS" -eq 0 ]; then
+    STATUS_COLOR="🟡"
+    STATUS_TEXT="NO_TESTS"
+elif [ "$FAILED_TESTS" -eq 0 ] && [ "$BROKEN_TESTS" -eq 0 ]; then
     STATUS_COLOR="🟢"
     STATUS_TEXT="SUCCESS"
 elif [ "$FAILED_TESTS" -gt 0 ] || [ "$BROKEN_TESTS" -gt 0 ]; then
@@ -72,25 +76,25 @@ else
 fi
 
 if [ "$PASSED_TESTS" -eq 0 ]; then
-    PASSED_TESTS_TEXT="No tests passed"
+    PASSED_TESTS_TEXT="0"
 else
     PASSED_TESTS_TEXT="$PASSED_TESTS"
 fi
 
 if [ "$FAILED_TESTS" -eq 0 ]; then
-    FAILED_TESTS_TEXT="No failures"
+    FAILED_TESTS_TEXT="0"
 else
     FAILED_TESTS_TEXT="$FAILED_TESTS"
 fi
 
 if [ "$BROKEN_TESTS" -eq 0 ]; then
-    BROKEN_TESTS_TEXT="No broken tests"
+    BROKEN_TESTS_TEXT="0"
 else
     BROKEN_TESTS_TEXT="$BROKEN_TESTS"
 fi
 
 if [ "$SKIPPED_TESTS" -eq 0 ]; then
-    SKIPPED_TESTS_TEXT="No skipped tests"
+    SKIPPED_TESTS_TEXT="0"
 else
     SKIPPED_TESTS_TEXT="$SKIPPED_TESTS"
 fi
@@ -102,6 +106,8 @@ MESSAGE="🚀 <b>Mobile Test Automation Completed!</b>
 • <b>Total tests:</b> $TOTAL_TESTS_TEXT
 • <b>Passed:</b> $PASSED_TESTS_TEXT ✅
 • <b>Failed:</b> $FAILED_TESTS_TEXT ❌
+• <b>Broken:</b> $BROKEN_TESTS_TEXT ⚠️
+• <b>Skipped:</b> $SKIPPED_TESTS_TEXT ⏭️
 • <b>Success rate:</b> ${SUCCESS_RATE}%
 
 🔗 <b>Links:</b>
