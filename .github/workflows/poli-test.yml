@@ -178,7 +178,7 @@ jobs:
 <body>
     <div class="header">
         <h1>Test Automation Report</h1>
-        <p>Generated: $(date)</p>
+        <p>Generated: $$(date)</p>
     </div>
     <div class="status error">
         <h2>⚠️ No Test Results Available</h2>
